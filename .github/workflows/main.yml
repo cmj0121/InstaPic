@@ -1,0 +1,15 @@
+name: pipeline
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  compliance:
+    name: compliance
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+
+# vim: set ts=2 sw=2 expandtab:
