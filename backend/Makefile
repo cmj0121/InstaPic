@@ -5,8 +5,8 @@ VENV=.venv
 all: $(VENV)	# setup basic environment
 
 clean:			# cleanup temporary file and environment
-	find . -name '*.swp' -delete
-	rm -f $(VENV)
+	@find . -name '*.swp' -delete
+	@rm -rf $(VENV)
 
 help:	# show this message
 	@printf "Usage: make [OPTION]\n"
@@ -16,5 +16,3 @@ help:	# show this message
 
 $(VENV):
 	python3 -m venv $@
-
-

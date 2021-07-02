@@ -6,7 +6,8 @@ BUILD=build/web
 all:	# setup basic environment
 
 clean:	# cleanup temporary file and environment
-	find . -name '*.swp' -delete
+	@find . -name '*.swp' -delete
+	@rm -rf $(BUILD)
 
 help:	# show this message
 	@printf "Usage: make [OPTION]\n"

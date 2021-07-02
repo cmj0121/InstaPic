@@ -1,15 +1,20 @@
-.PHONY: all clean help
+SUBDIR=frontend backend
+
+.PHONY: all clean help $(SUBDIR)
 
 all:	# setup basic environment
 
-clean:	# cleanup temporary file and environment
-	find . -name '*.swp' -delete
+clean: $(SUBDIR)	# cleanup temporary file and environment
+	@find . -name '*.swp' -delete
 
 help:	# show this message
 	@printf "Usage: make [OPTION]\n"
 	@printf "\n"
 	@perl -nle 'print $$& if m{^[\w-]+:.*?#.*$$}' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?#"} {printf "    %-18s %s\n", $$1, $$2}'
+
+$(SUBDIR):
+	$(MAKE) -C $@ $(MAKECMDGOALS)
 
 start:		# run everything on the docker environment
 	docker-compose up -d
@@ -24,3 +29,8 @@ restart:	# force rebuild the docker environment
 
 log:		# show the log for docker environment
 	docker-compose logs -f
+
+heroku:	# build and ready deploy to heroku
+	$(MAKE) -C frontend/ build
+	rsync -ar --delete --include='*.py' --include=requirements.txt --exclude='*' backend/ release/
+	rsync -ar --delete frontend/build/web/ release/static/

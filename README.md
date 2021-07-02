@@ -10,3 +10,10 @@ Implement a website (include frontend and backend) that
 - testing
 - [OPTIONAL] sorted by time
 - [OPTIONAL] filter by user
+
+## Heroku ##
+The test environment is based on the [heroku][0] and test-site is located on [here][1]
+
+[0]: https://dashboard.heroku.com/
+[1]: https://true-backbacon-32727.herokuapp.com/
+
