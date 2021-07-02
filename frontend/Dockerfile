@@ -16,5 +16,6 @@ ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PAT
 
 WORKDIR /src
 ADD . .
+USER nobody
 
 CMD make run
