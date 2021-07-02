@@ -1,13 +1,23 @@
 version: '3.9'
 
 services:
-  frontend:
+  portal:
     build:
       context: frontend/
       dockerfile: Dockerfile
+    volumes:
+      - ./frontend/:/src
+    ports:
+      - 8000:8000
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8000
+      interval: 3m30s
+      timeout: 15s
+      retries: 10
+      start_period: 30s
 
-  backend:
-    build:
-      context: backend/
-      dockerfile: Dockerfile
 # vim: set ts=2 sw=2 expandtab:

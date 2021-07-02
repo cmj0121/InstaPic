@@ -11,16 +11,16 @@ help:	# show this message
 	@perl -nle 'print $$& if m{^[\w-]+:.*?#.*$$}' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?#"} {printf "    %-18s %s\n", $$1, $$2}'
 
-run:		# run everything on the local environment
-	docker-compose up --build -d
+start:		# run everything on the docker environment
+	docker-compose up -d
 
-stop:		# stop all services in local environment
+stop:		# stop all services in docker environment
 	docker-compose stop
 
-rebuild:	# force rebuild the local environment
+restart:	# force rebuild the docker environment
 	docker-compose stop
 	docker-compose rm -f
-	docker-compose up --build -d
+	docker-compose up --build -d --remove-orphans
 
-log:		# show the log for local environment
+log:		# show the log for docker environment
 	docker-compose logs -f
