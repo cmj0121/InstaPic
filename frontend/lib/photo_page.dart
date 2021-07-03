@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:universal_html/html.dart';
 
 
 class CustomizedImage extends StatelessWidget {
@@ -37,6 +38,8 @@ class InstaPicPage extends StatefulWidget {
 }
 
 class _InstaPicPage extends State<InstaPicPage> {
+  final String session_key = 'session';
+
   ScrollController _controller = ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
 
   bool _loading = false;
@@ -54,6 +57,7 @@ class _InstaPicPage extends State<InstaPicPage> {
         fetchImage();
       }
     });
+
     fetchImage();
   }
 
@@ -87,7 +91,7 @@ class _InstaPicPage extends State<InstaPicPage> {
       floatingActionButton: FloatingActionButton(
         tooltip: 'Add Photo',
         child: Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () => Navigator.of(context).pushNamed('/upload'),
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'photo_page.dart';
+import 'upload_page.dart';
+
 
 void main() => runApp( InstaPicApp() );
 
@@ -11,26 +13,12 @@ class InstaPicApp extends StatelessWidget {
     return MaterialApp(
       title: 'InstaPic',
       theme: ThemeData.dark(),
-      home: InstaPic(),
+      home: InstaPicPage(),
+      routes: <String, WidgetBuilder> {
+        '/login': (BuildContext context) => UserLoginPage(),
+        '/upload': (BuildContext context) => UploadPage(),
+      },
     );
-  }
-}
-
-class InstaPic extends StatefulWidget {
-  @override
-  _InstaPicState createState() => _InstaPicState();
-}
-
-class _InstaPicState extends State<InstaPic> {
-  @override
-  Widget build(BuildContext context) {
-    return UserLoginPage(() => {
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (BuildContext context) => InstaPicPage(),
-        )
-      )
-    });
   }
 }
 

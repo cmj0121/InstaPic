@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 
 class UserLoginPage extends StatelessWidget {
-  final VoidCallback try_login;
-
-  UserLoginPage(@required this.try_login);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,7 +61,7 @@ class UserLoginPage extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        onPressed: () => try_login(),
+                        onPressed: () => try_login(context),
                       ),
                     ),
                   ],
@@ -76,6 +72,11 @@ class UserLoginPage extends StatelessWidget {
         ),
       )
     );
+  }
+
+  void try_login(BuildContext context) {
+    var session = 'dummy';
+    Navigator.of(context).pop(session);
   }
 }
 
