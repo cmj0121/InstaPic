@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:universal_html/html.dart';
+import 'package:universal_html/html.dart' as html;
 
 
 class User extends StatelessWidget {
@@ -10,7 +10,7 @@ class User extends StatelessWidget {
   User(@required this.username);
 
   factory User.fromCookie() {
-    String? session = window.localStorage[User.session_key];
+    String? session = html.window.localStorage[User.session_key];
 
     // get user info
     return User(session);
@@ -19,13 +19,13 @@ class User extends StatelessWidget {
   void save() {
     if (username != null) {
       // save session into local storage
-      window.localStorage[User.session_key] = username!;
+      html.window.localStorage[User.session_key] = username!;
     }
   }
 
   void logout() {
     // remove the session from local storage
-    window.localStorage.remove(User.session_key);
+    html.window.localStorage.remove(User.session_key);
   }
 
   @override
