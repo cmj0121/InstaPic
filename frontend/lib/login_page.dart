@@ -111,14 +111,16 @@ class _UserLoginState extends State<UserLoginPage> {
   void signin(BuildContext context) {
     if (_username_controller.text != '' && _password_controller.text != '') {
       User user = User(_username_controller.text);
-      Navigator.of(context).pushNamed(InstaPicPage.route, arguments: user);
+      user.save();
+      Navigator.of(context).pushNamed(InstaPicPage.route);
     }
   }
 
   void signup(BuildContext context) {
     if (_username_controller.text != '' && _password_controller.text != '') {
       User user = User(_username_controller.text);
-      Navigator.of(context).pushNamed(InstaPicPage.route, arguments: user);
+      user.save();
+      Navigator.of(context).pushNamed(InstaPicPage.route);
     }
   }
 }

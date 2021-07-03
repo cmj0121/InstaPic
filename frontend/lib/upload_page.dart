@@ -29,23 +29,19 @@ class UploadPage extends StatefulWidget {
 
 class _UploadPageState extends State<UploadPage> {
   Image? _image;
-  User? user;
+  User user = User.fromCookie();
 
   @override
   Widget build(BuildContext context) {
-    final User? login_user = ModalRoute.of(context)?.settings.arguments as User?;
-    if (user == null) {
-      if (login_user == null) {
-        return UserLoginPage(title: widget.title);
-      }
-      user = login_user;
+    if (user.username == null) {
+      return UserLoginPage(title: widget.title);
     }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
         actions: <Widget>[
-          user!,
+          user,
         ],
       ),
       body: Center(

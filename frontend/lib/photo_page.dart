@@ -55,9 +55,8 @@ class InstaPicPage extends StatefulWidget {
 class _InstaPicState extends State<InstaPicPage> {
   final String session_key = 'session';
 
-  User? user;
-
   bool _loading = false;
+  User user = User.fromCookie();
   List<CustomizedImage> _images = [];
   ScrollController _controller = ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
 
@@ -78,12 +77,8 @@ class _InstaPicState extends State<InstaPicPage> {
 
   @override
   Widget build(BuildContext context) {
-    final User? login_user = ModalRoute.of(context)?.settings.arguments as User?;
-    if (user == null) {
-      if (login_user == null) {
-        return UserLoginPage(title: widget.title);
-      }
-      user = login_user;
+    if (user.username == null) {
+      return UserLoginPage(title: widget.title);
     }
 
     // load first images
@@ -93,7 +88,7 @@ class _InstaPicState extends State<InstaPicPage> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: <Widget>[
-          user!,
+          user,
         ],
       ),
       body: Center(

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'configure_nonweb.dart' if (dart.library.html) 'configure_web.dart';
+
 import 'login_page.dart';
 import 'photo_page.dart';
 import 'upload_page.dart';
-import 'user.dart';
 
 
 // main function, start your application
-void main() => runApp( InstaPicApp() );
+void main() {
+  configureApp();
+  runApp( InstaPicApp() );
+}
 
 
 // the main widget of the InstaPic
