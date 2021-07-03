@@ -1,21 +1,37 @@
 import 'package:flutter/material.dart';
 
-class UserLoginPage extends StatelessWidget {
+import 'photo_page.dart';
+import 'user.dart';
+
+
+// login page
+class UserLoginPage extends StatefulWidget {
+  static const String route = '/login';
+
+  final String title;
+
+  UserLoginPage({
+    required this.title,
+  });
+
+  @override
+  _UserLoginState createState() => _UserLoginState();
+}
+
+class _UserLoginState extends State<UserLoginPage> {
+  final double width = 400;
+  final double height = 600;
+  final TextEditingController _username_controller = TextEditingController();
+  final TextEditingController _password_controller = TextEditingController();
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: login_page(context),
-      ),
-    );
-  }
-
-  Widget login_page(BuildContext context) {
-    return Scaffold(
-      body: Center(
         child: Container(
-          width: 400,
-          height: 600,
+          width: width,
+          height: height,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -25,48 +41,7 @@ class UserLoginPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline3,
               ),
               SizedBox(height: 55.0),
-              Container(
-                padding: const EdgeInsets.all(13.0),
-                decoration: BoxDecoration(
-                  color: Colors.grey[800],
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  children: <Widget>[
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Username',
-                        hintText: 'Carol',
-                      ),
-                    ),
-                    TextField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                      ),
-                    ),
-                    SizedBox(height: 45.0),
-                    Container(
-                      height: 50,
-                      width: 250,
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: FlatButton(
-                        child: Text(
-                          'Login',
-                          style: Theme.of(context).textTheme.headline6?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        onPressed: () => try_login(context),
-                      ),
-                    ),
-                  ],
-                )
-              ),
+              loginPage(context),
             ],
           ),
         ),
@@ -74,9 +49,77 @@ class UserLoginPage extends StatelessWidget {
     );
   }
 
-  void try_login(BuildContext context) {
-    var session = 'dummy';
-    Navigator.of(context).pop(session);
+  @override
+  void dispose() {
+    _username_controller.dispose();
+    _password_controller.dispose();
+    super.dispose();
+  }
+
+  Widget loginPage(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(13.0),
+      decoration: BoxDecoration(
+        color: Colors.grey[800],
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: <Widget>[
+          TextField(
+            controller: _username_controller,
+            decoration: InputDecoration(
+              labelText: 'Username',
+              hintText: 'Carol',
+            ),
+          ),
+          TextField(
+            obscureText: true,
+            controller: _password_controller,
+            decoration: InputDecoration(
+              labelText: 'Password',
+            ),
+          ),
+          SizedBox(height: 45.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              TextButton(
+                child: Text(
+                  'SignIn',
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                    color: Colors.lightBlue,
+                  ),
+                ),
+                onPressed: () => signin(context),
+              ),
+              TextButton(
+                child: Text(
+                  'SignUp',
+                  style: Theme.of(context).textTheme.headline6?.copyWith(
+                    color: Colors.red,
+                  ),
+                ),
+                onPressed: () => signup(context),
+              ),
+            ],
+          ),
+        ],
+      )
+    );
+  }
+
+  void signin(BuildContext context) {
+    if (_username_controller.text != '' && _password_controller.text != '') {
+      User user = User(_username_controller.text);
+      Navigator.of(context).pushNamed(InstaPicPage.route, arguments: user);
+    }
+  }
+
+  void signup(BuildContext context) {
+    if (_username_controller.text != '' && _password_controller.text != '') {
+      User user = User(_username_controller.text);
+      Navigator.of(context).pushNamed(InstaPicPage.route, arguments: user);
+    }
   }
 }
 

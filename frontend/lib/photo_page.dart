@@ -4,7 +4,12 @@ import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:universal_html/html.dart';
 
+import 'upload_page.dart';
+import 'login_page.dart';
+import 'user.dart';
 
+
+// the image widget to show the upload image
 class CustomizedImage extends StatelessWidget {
   final String link;
 
@@ -32,23 +37,35 @@ class CustomizedImage extends StatelessWidget {
   }
 }
 
+
+// the main InstaPic photo viewer
 class InstaPicPage extends StatefulWidget {
+  static const String route = '/';
+
+  final String title;
+
+  InstaPicPage({
+    required this.title,
+  });
+
   @override
-  _InstaPicPage createState() => _InstaPicPage();
+  _InstaPicState createState() => _InstaPicState();
 }
 
-class _InstaPicPage extends State<InstaPicPage> {
+class _InstaPicState extends State<InstaPicPage> {
   final String session_key = 'session';
 
-  ScrollController _controller = ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
+  User? user;
 
   bool _loading = false;
   List<CustomizedImage> _images = [];
+  ScrollController _controller = ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
 
   @override
   void initState() {
     super.initState();
 
+    // load more image when scroll to bottom
     _controller.addListener(() {
       if (!_loading && _controller.offset == _controller.position.maxScrollExtent) {
         setState(() {
@@ -57,13 +74,28 @@ class _InstaPicPage extends State<InstaPicPage> {
         fetchImage();
       }
     });
-
-    fetchImage();
   }
 
   @override
   Widget build(BuildContext context) {
+    final User? login_user = ModalRoute.of(context)?.settings.arguments as User?;
+    if (user == null) {
+      if (login_user == null) {
+        return UserLoginPage(title: widget.title);
+      }
+      user = login_user;
+    }
+
+    // load first images
+    fetchImage();
+
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: <Widget>[
+          user!,
+        ],
+      ),
       body: Center(
         child: SafeArea(
           child: LayoutBuilder(
@@ -71,7 +103,7 @@ class _InstaPicPage extends State<InstaPicPage> {
               return Column(
                 children: <Widget>[
                   Expanded(
-                    child: photo_page(context, constraints),
+                    child: photoPage(context, constraints),
                   ),
                   Visibility(
                     visible: _loading,
@@ -91,12 +123,12 @@ class _InstaPicPage extends State<InstaPicPage> {
       floatingActionButton: FloatingActionButton(
         tooltip: 'Add Photo',
         child: Icon(Icons.add),
-        onPressed: () => Navigator.of(context).pushNamed('/upload'),
+        onPressed: () => Navigator.of(context).pushNamed(UploadPage.route),
       ),
     );
   }
 
-  Widget photo_page(BuildContext context, BoxConstraints constraints) {
+  Widget photoPage(BuildContext context, BoxConstraints constraints) {
       if (constraints.maxWidth > 1000) {
         return GridView.count(
           controller: _controller,
@@ -127,7 +159,6 @@ class _InstaPicPage extends State<InstaPicPage> {
   Future<List<CustomizedImage>> fetchImage() async {
     Random random = new Random();
 
-    print('fetching ...');
     final String link = 'https://dummyimage.com/250/ffffff/000000';
     List<CustomizedImage> imgs = List<CustomizedImage>.generate(random.nextInt(100), (_) => CustomizedImage(link)); 
 

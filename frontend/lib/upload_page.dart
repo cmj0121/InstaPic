@@ -3,12 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 
+import 'login_page.dart';
+import 'user.dart';
 
+
+// The upload page to upload image with optional description
 class UploadPage extends StatefulWidget {
+  static const String route = '/upload';
+
+  final String title;
+  final User? user;
   final double width;
   final double height;
 
   UploadPage({
+    required this.title,
+    this.user,
     this.width = 600,
     this.height = 400,
   });
@@ -19,10 +29,25 @@ class UploadPage extends StatefulWidget {
 
 class _UploadPageState extends State<UploadPage> {
   Image? _image;
+  User? user;
 
   @override
   Widget build(BuildContext context) {
+    final User? login_user = ModalRoute.of(context)?.settings.arguments as User?;
+    if (user == null) {
+      if (login_user == null) {
+        return UserLoginPage(title: widget.title);
+      }
+      user = login_user;
+    }
+
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: <Widget>[
+          user!,
+        ],
+      ),
       body: Center(
         child: Container(
           width: widget.width,
@@ -41,6 +66,14 @@ class _UploadPageState extends State<UploadPage> {
                   ),
                 ),
               ),
+              TextField(
+                // limit the input lenth to 32 chars
+                maxLength: 32,
+                decoration: InputDecoration(
+                  labelText: 'description',
+                  hintText: 'memo',
+                ),
+              ),
 
               Padding(
                 padding: const EdgeInsets.only(top: 6),
@@ -52,9 +85,9 @@ class _UploadPageState extends State<UploadPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => uploadImage(context),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -64,7 +97,15 @@ class _UploadPageState extends State<UploadPage> {
 
   Widget imageZone(BuildContext context) {
     if (_image == null) {
-      return dropZone(context);
+      return InkWell(
+        onTap: () => filePicker(),
+        child: Center(
+          child: Text(
+            'Upload file',
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+        ),
+      );
     }
 
     return Stack(
@@ -91,16 +132,25 @@ class _UploadPageState extends State<UploadPage> {
     );
   }
 
-  Widget dropZone(BuildContext context) {
-    return InkWell(
-      onTap: () => filePicker(),
-      child: Center(
-        child: Text(
-          'Upload file',
-          style: Theme.of(context).textTheme.subtitle1,
+  void uploadImage(BuildContext context) {
+    if (_image == null) {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          content: const Text('please select a image'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () => Navigator.pop(context, 'Close'),
+            ),
+          ],
         ),
-      ),
-    );
+      );
+      return ;
+    }
+
+    // upload image and back to privious page
+    Navigator.of(context).pop();
   }
 
   void filePicker() async {
