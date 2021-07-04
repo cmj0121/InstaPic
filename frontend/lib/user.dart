@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:universal_html/html.dart' as html;
 
+import 'config.dart';
+
 
 class User extends StatelessWidget {
   static const String session_key = 'session';
@@ -15,6 +17,7 @@ class User extends StatelessWidget {
 
   factory User.fromCookie() {
     String? username = html.window.localStorage[User.username_key];
+
     if (username != null && username == '') {
       // set username as null if empty
       username = null;

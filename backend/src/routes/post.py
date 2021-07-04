@@ -1,8 +1,9 @@
 #! /usr/bin/env python
-from flask import request
+import ulid
+from flask import request, abort
 
 from . import API, Response, auth_required
-from ..models import Post
+from ..models import Post, Photo
 from ..database import atomic
 
 
@@ -77,17 +78,35 @@ def submit_post():
           401:
             description: missing header or invalid header
     '''
-    if request.json:
-        desc = request.json.get('desc', '')
+    desc = request.form.get('desc', '')
 
-        with atomic() as session:
-            post = Post(
-                desc=desc,
-                user_id=request.user.username,
-            )
-            session.add(post)
-        return Response.created(post)
+    upload_file = request.files.get('file')
+    if not upload_file:
+        raise Response.bad_request('missing file')
 
-    return Response.bad_request()
+    with atomic() as session:
+        photo = Photo(
+            id=ulid.ulid(),
+            blob=upload_file.read(),
+            filename=upload_file.filename,
+        )
+        session.add(photo)
+
+        post = Post(
+            desc=desc,
+            photo_id=photo.id,
+            user_id=request.user.username,
+        )
+        session.add(post)
+    return Response.created(post)
+
+
+@API.route('/api/photo/<photo_id>')
+def get_submitted_photo(photo_id):
+    photo = Photo.get(photo_id)
+    if not photo:
+        abort(404)
+
+    return Response.blob(photo.blob, filename=f'{photo.filename}.png')
 
 # vim: set ts=4 sw=4 expandtab:

@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 from functools import wraps
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, make_response
 
 
 def register_routes(flask_app):
@@ -24,6 +24,16 @@ class Response(object):
             for key, value in headers.items():
                 response.headers[key] = value
         return response, 201
+
+    @staticmethod
+    def blob(blob, filename, headers=None):
+        response = make_response(blob)
+        if headers and isinstance(headers, dict):
+            for key, value in headers.items():
+                response.headers[key] = value
+        response.headers.set('Content-Type', 'image/png')
+        response.headers.set('Content-Disposition', 'attachment', filename=filename)
+        return response
 
     @staticmethod
     def bad_request(message=None):

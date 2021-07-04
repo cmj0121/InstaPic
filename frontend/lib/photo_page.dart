@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'config.dart';
 import 'upload_page.dart';
 import 'login_page.dart';
 import 'user.dart';
@@ -33,39 +34,40 @@ class CustomizedImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      // using cached_network_image to cache the image on local
       child: Column(
         children: <Widget>[
-          CachedNetworkImage(
-            imageUrl: link!,
-            progressIndicatorBuilder: (context, url, downloadProgress) =>
-              CircularProgressIndicator(value: downloadProgress.progress),
-            errorWidget: (context, url, error) => Icon(Icons.error),
-            imageBuilder: (context, provider) => Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: provider,
-                  fit: BoxFit.cover,
+          Expanded(
+            child: CachedNetworkImage(
+              imageUrl: link!,
+              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                CircularProgressIndicator(value: downloadProgress.progress),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+              imageBuilder: (context, provider) => Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: provider,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
           ),
           Text(
-            desc!,
+            desc ?? '',
             style: Theme.of(context).textTheme.subtitle1,
           ),
           TextButton(
             child: Text(
               username ?? '',
+              style: Theme.of(context).textTheme.subtitle1,
             ),
-            onPressed: () => {},
+            onPressed: () => Navigator.of(context).pushNamed(InstaPicPage.route),
           ),
         ],
       ),
     );
   }
 }
-
 
 // the main InstaPic photo viewer
 class InstaPicPage extends StatefulWidget {
@@ -184,7 +186,7 @@ class _InstaPicState extends State<InstaPicPage> {
     Random random = new Random();
 
     final resp = await http.get(
-      Uri.base.replace(path: '/api/posts'),
+      baseURI.replace(path: '/api/posts'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorizer': user.session(),

@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 
+import 'config.dart';
 import 'photo_page.dart';
 import 'login_page.dart';
 import 'user.dart';
@@ -33,6 +34,7 @@ class UploadPage extends StatefulWidget {
 
 class _UploadPageState extends State<UploadPage> {
   Image? _image;
+  PlatformFile? _file;
   User user = User.fromCookie();
 
   final TextEditingController _controller = TextEditingController();
@@ -159,16 +161,23 @@ class _UploadPageState extends State<UploadPage> {
     }
 
     // upload image and back to privious page
-    final resp = await http.post(
-      Uri.base.replace(path: '/api/post'),
-      headers: <String, String>{
+    final request = await http.MultipartRequest(
+      'POST',
+      baseURI.replace(path: '/api/post'),
+    );
+    request.headers.addAll({
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorizer': user.session(),
-      },
-      body: jsonEncode(<String, String> {
-        'desc': _controller.text,
-      }),
-    );
+    });
+    request.fields['desc'] = _controller.text;
+    // add file
+    request.files.add(http.MultipartFile.fromBytes(
+      'file',
+      _file!.bytes!,
+      filename: _file!.name,
+    ));
+
+    final resp = await request.send();
 
     switch (resp.statusCode) {
       case 201:
@@ -190,6 +199,7 @@ class _UploadPageState extends State<UploadPage> {
       PlatformFile file = result.files.single;
 
       setState(() {
+        _file = file;
         _image = Image.memory(file.bytes!);
       });
     }

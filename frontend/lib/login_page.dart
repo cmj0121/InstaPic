@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
+import 'config.dart';
 import 'photo_page.dart';
 import 'user.dart';
 
@@ -124,7 +125,7 @@ class _UserLoginState extends State<UserLoginPage> {
   void signin(BuildContext context) async {
     if (_username_controller.text != '' && _password_controller.text != '') {
       final resp = await http.post(
-        Uri.base.replace(path: Uri.base.path + 'api/user/signin'),
+        baseURI.replace(path: '/api/user/signin'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -159,7 +160,7 @@ class _UserLoginState extends State<UserLoginPage> {
   void signup(BuildContext context) async {
     if (_username_controller.text != '' && _password_controller.text != '') {
       final resp = await http.post(
-        Uri.base.replace(path: Uri.base.path + 'api/user'),
+        baseURI.replace(path: '/api/user'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

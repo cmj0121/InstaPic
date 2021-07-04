@@ -94,6 +94,7 @@ class Post(TimestampMixin, DB.Model):
 
     id = DB.Column(DB.String(NAME_LEN), primary_key=True)
     desc = DB.Column(DB.String(TEXT_LEN, convert_unicode=True))
+    photo_id = DB.Column(DB.String(NAME_LEN), DB.ForeignKey('photo.id'), nullable=False, index=True)
     user_id = DB.Column(DB.String(NAME_LEN), DB.ForeignKey('user.username'), nullable=False, index=True)
 
     def __init__(self, **kwargs):
@@ -103,9 +104,28 @@ class Post(TimestampMixin, DB.Model):
     @property
     def __json__(self):
         return {
-            'link': 'https://dummyimage.com/250/ffffff/000000',
+            'link': f'/api/photo/{self.photo_id}',
             'desc': self.desc or '',
             'username': self.user_id,
         }
+
+
+class Photo(TimestampMixin, DB.Model):
+    '''
+        NOTE - The demo-purpose table.
+        In production environmet the photo should be stored in persistence storage.
+    '''
+    __tablename__ = 'photo'
+
+    id = DB.Column(DB.String(NAME_LEN), primary_key=True)
+    filename = DB.Column(DB.String(NAME_LEN), nullable=False)
+    blob = DB.Column(DB.BLOB)
+
+    @classmethod
+    def get(cls, photo_id):
+        sql = DB.session.query(cls).filter(
+            cls.id == photo_id,
+        )
+        return sql.first()
 
 # vim: set ts=4 sw=4 expandtab:
