@@ -16,3 +16,9 @@ help:	# show this message
 
 $(VENV):
 	python3 -m venv $@
+
+route:	# show all routes
+	FLASK_APP=main:app flask routes
+
+test:	# run test
+	python -m pytest

@@ -3,6 +3,7 @@ SUBDIR=frontend backend
 .PHONY: all clean help $(SUBDIR)
 
 all:	# setup basic environment
+	@pre-commit install --install-hooks
 
 clean: $(SUBDIR)	# cleanup temporary file and environment
 	@find . -name '*.swp' -delete
@@ -32,5 +33,5 @@ log:		# show the log for docker environment
 
 heroku:	# build and ready deploy to heroku
 	$(MAKE) -C frontend/ build
-	rsync -ar --delete --include='*.py' --include=requirements.txt --exclude='*' backend/ release/
+	rsync -ar --delete --include='*/' --include='*.py' --include=requirements.txt --exclude='*' backend/ release/
 	rsync -ar --delete frontend/build/web/ release/static/
