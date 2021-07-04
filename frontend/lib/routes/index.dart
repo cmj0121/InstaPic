@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'upload.dart';
 import 'login.dart';
+import '../user.dart';
 import '../image.dart';
 import '../requests.dart';
 
@@ -43,8 +44,6 @@ class _IndexState extends State<IndexPage> {
 
   @override
   Widget build(BuildContext context) {
-    _username = ModalRoute.of(context)!.settings.arguments as String?;
-
     return FutureBuilder<String>(
       future: api_username(),
       builder: (context, snapshot) {
@@ -60,15 +59,18 @@ class _IndexState extends State<IndexPage> {
           );
         }
 
-        return builder(context);
+        return builder(context, username);
       },
     );
   }
 
-  Widget builder(BuildContext context) {
+  Widget builder(BuildContext context, String username) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: <Widget>[
+          User(username),
+        ]
       ),
       body: Center(
         child: SafeArea(

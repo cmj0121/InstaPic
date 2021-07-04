@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 
 import 'login.dart';
 import 'index.dart';
+import '../user.dart';
 import '../requests.dart';
 
 
@@ -27,8 +28,8 @@ class UploadPage extends StatefulWidget {
 
 class _UploadState extends State<UploadPage> {
   Image? _image;
-  PlatformFile? _file;
   String? _error_message;
+  PlatformFile? _file;
 
   final TextEditingController _controller = TextEditingController();
 
@@ -55,15 +56,18 @@ class _UploadState extends State<UploadPage> {
           );
         }
 
-        return builder(context);
+        return builder(context, username);
       },
     );
   }
 
-  Widget builder(BuildContext context) {
+  Widget builder(BuildContext context, String username) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: <Widget>[
+          User(username),
+        ]
       ),
       body: Center(
         child: uploadForm(context),
