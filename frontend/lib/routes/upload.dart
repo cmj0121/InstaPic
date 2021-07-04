@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
+import 'login.dart';
+import 'index.dart';
+import '../requests.dart';
+
 
 class UploadPage extends StatefulWidget {
   static const String route = '/upload';
@@ -23,6 +27,8 @@ class UploadPage extends StatefulWidget {
 
 class _UploadState extends State<UploadPage> {
   Image? _image;
+  PlatformFile? _file;
+  String? _error_message;
 
   final TextEditingController _controller = TextEditingController();
 
@@ -34,6 +40,27 @@ class _UploadState extends State<UploadPage> {
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+      future: api_username(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          // show the loading page
+          return CircularProgressIndicator();
+        }
+
+        final String username = snapshot.data!;
+        if (username == '') {
+          WidgetsBinding.instance?.addPostFrameCallback(
+             (_) => Navigator.of(context).pushReplacementNamed(LoginPage.route)
+          );
+        }
+
+        return builder(context);
+      },
+    );
+  }
+
+  Widget builder(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -79,6 +106,15 @@ class _UploadState extends State<UploadPage> {
               hintText: 'memo',
             ),
           ),
+          Opacity(
+            opacity: _error_message != null ? 1.0 : 0.0,
+            child: Text(
+              _error_message ?? "<Error>",
+              style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                color: Colors.red,
+              ),
+            )
+          ),
           Padding(
             padding: const EdgeInsets.only(top: 6),
             child: TextButton(
@@ -89,7 +125,7 @@ class _UploadState extends State<UploadPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              onPressed: () => {}
+              onPressed: () => upload(),
             ),
           ),
         ],
@@ -127,7 +163,7 @@ class _UploadState extends State<UploadPage> {
 
             setState(() {
               // get file
-              print('upload file ${file.name}');
+              _file = file;
               _image = Image.memory(file.bytes!);
             });
           }
@@ -139,6 +175,23 @@ class _UploadState extends State<UploadPage> {
     }
 
     return _image!;
+  }
+
+  void upload() async {
+    final resp = await api_upload_image(_file!, _controller.text);
+
+    switch (resp.statusCode) {
+      case 201:
+        // upload success
+        Navigator.of(context).pushReplacementNamed(IndexPage.route);
+        break;
+      default:
+        setState( () {
+          print('cannot upload: ${resp.statusCode}');
+          _error_message = 'cannot upload: ${resp.statusCode}';
+        });
+        break;
+    }
   }
 }
 

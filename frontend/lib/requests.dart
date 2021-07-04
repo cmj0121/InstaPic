@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'package:file_picker/file_picker.dart';
 
 import 'user.dart';
 
@@ -26,6 +27,37 @@ var http_get_auth = (String path) async => get(
 );
 
 var api_me = () => http_get_auth('/api/me');
+
+var api_upload_image = (PlatformFile file, String description) async {
+  final request = await MultipartRequest(
+    'POST',
+    apiServer.replace(path: '/api/post'),
+  );
+
+  request.headers.addAll({
+    'Authorizer': get_session(),
+  });
+  request.fields['desc'] = description;
+  // add file
+  request.files.add(MultipartFile.fromBytes(
+    'file',
+    file.bytes!,
+    filename: file.name,
+  ));
+
+  return request.send();
+};
+
+var api_get_image = (String? username, String next_id) => get(
+  apiServer.replace(path: '/api/posts', queryParameters: {
+    'username': username ?? '',
+    'next_id': next_id,
+  }),
+  headers: <String, String>{
+    'Content-Type': 'application/json; charset=UTF-8',
+    'Authorizer': get_session(),
+  },
+);
 
 Future<String> api_username() async {
   final resp = await api_me();

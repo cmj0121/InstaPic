@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'route.dart';
+
 
 // the image widget to show the upload image
 class CustomizedImage extends StatelessWidget {
@@ -13,6 +15,14 @@ class CustomizedImage extends StatelessWidget {
     required this.desc,
     required this.username,
   });
+
+  factory CustomizedImage.fromJson(Map<String, dynamic> json) {
+    return CustomizedImage(
+      link: json['link'],
+      desc: json['desc'],
+      username: json['username'],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +54,7 @@ class CustomizedImage extends StatelessWidget {
               username,
               style: Theme.of(context).textTheme.subtitle1,
             ),
-            onPressed: () => {},
+            onPressed: () => Navigator.of(context).pushNamed(IndexPage.route, arguments: username),
           ),
         ],
       ),
