@@ -2,6 +2,7 @@
 import os
 import logging
 from flask import Flask, request
+from flask_cors import CORS
 from flasgger import Swagger
 
 
@@ -28,6 +29,7 @@ def create_flask_app(config=None):
 
     # initial flask plugins
     DB.init_app(app)
+    CORS(app, resources={'*'})
 
     # register swagger
     swagger_config = Swagger.DEFAULT_CONFIG
