@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 import 'photo_page.dart';
@@ -24,6 +27,7 @@ class _UserLoginState extends State<UserLoginPage> {
   final TextEditingController _username_controller = TextEditingController();
   final TextEditingController _password_controller = TextEditingController();
 
+  String? _error_message;
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +83,15 @@ class _UserLoginState extends State<UserLoginPage> {
               labelText: 'Password',
             ),
           ),
+          Opacity(
+            opacity: _error_message != null ? 1.0 : 0.0,
+            child: Text(
+              _error_message ?? "<Error>",
+              style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                color: Colors.red,
+              ),
+            )
+          ),
           SizedBox(height: 45.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -108,19 +121,73 @@ class _UserLoginState extends State<UserLoginPage> {
     );
   }
 
-  void signin(BuildContext context) {
+  void signin(BuildContext context) async {
     if (_username_controller.text != '' && _password_controller.text != '') {
-      User user = User(_username_controller.text);
-      user.save();
-      Navigator.of(context).pushNamed(InstaPicPage.route);
+      final resp = await http.post(
+        Uri.base.replace(path: Uri.base.path + 'api/user/signin'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'username': _username_controller.text,
+          'password': _password_controller.text,
+        })
+      );
+
+      switch (resp.statusCode) {
+        case 201:
+          // save cookie
+          Map<String, String> session = json.decode(utf8.decode(resp.bodyBytes));
+          User.save(session);
+          Navigator.of(context).pushNamed(InstaPicPage.route);
+          break;
+        case 403:
+          setState( () {
+            _error_message = "fail to signin, invalid username / password";
+          });
+          break;
+        default:
+          print('fail to login: ${resp.statusCode}');
+          setState( () {
+            _error_message = "Unkown error ${resp.statusCode}";
+          });
+          throw Exception('fail to login: ${resp.statusCode}');
+      }
     }
   }
 
-  void signup(BuildContext context) {
+  void signup(BuildContext context) async {
     if (_username_controller.text != '' && _password_controller.text != '') {
-      User user = User(_username_controller.text);
-      user.save();
-      Navigator.of(context).pushNamed(InstaPicPage.route);
+      final resp = await http.post(
+        Uri.base.replace(path: Uri.base.path + 'api/user'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'username': _username_controller.text,
+          'password': _password_controller.text,
+        })
+      );
+
+      switch (resp.statusCode) {
+        case 201:
+          // save cookie
+          Map<String, String> session = json.decode(utf8.decode(resp.bodyBytes));
+          User.save(session);
+          Navigator.of(context).pushNamed(InstaPicPage.route);
+          break;
+        case 409:
+          setState( () {
+            _error_message = "user already exist ${_username_controller.text}";
+          });
+          break;
+        default:
+          print('fail to login: ${resp.statusCode}');
+          setState( () {
+            _error_message = "Unkown error ${resp.statusCode}";
+          });
+          throw Exception('fail to login: ${resp.statusCode}');
+      }
     }
   }
 }

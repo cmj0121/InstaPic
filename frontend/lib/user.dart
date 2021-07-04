@@ -1,31 +1,26 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:universal_html/html.dart' as html;
 
 
 class User extends StatelessWidget {
   static const String session_key = 'session';
+  static const String username_key = 'username';
 
   final String? username;
 
-  User(@required this.username);
+  User(this.username);
 
   factory User.fromCookie() {
-    String? session = html.window.localStorage[User.session_key];
-
-    // get user info
-    return User(session);
-  }
-
-  void save() {
-    if (username != null) {
-      // save session into local storage
-      html.window.localStorage[User.session_key] = username!;
+    String? username = html.window.localStorage[User.username_key];
+    if (username != null && username == '') {
+      // set username as null if empty
+      username = null;
     }
-  }
 
-  void logout() {
-    // remove the session from local storage
-    html.window.localStorage.remove(User.session_key);
+    return User(username);
   }
 
   @override
@@ -40,7 +35,7 @@ class User extends StatelessWidget {
             TextButton(
               child: const Text('Yes'),
               onPressed: () {
-                logout();
+                User.logout();
                 // back to index
                 Navigator.of(context).pushReplacementNamed('/');
               }
@@ -53,6 +48,18 @@ class User extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  static void save(Map<String, String> json) {
+    // save tookie
+    html.window.localStorage[User.session_key] = json['session']!;
+    html.window.localStorage[User.username_key] = json['username']!;
+  }
+
+  static void logout() {
+    // remove the session from local storage
+    html.window.localStorage.remove(User.session_key);
+    html.window.localStorage.remove(User.username_key);
   }
 }
 

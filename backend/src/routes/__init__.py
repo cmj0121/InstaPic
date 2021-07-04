@@ -1,5 +1,6 @@
 #! /usr/bin/env python
-from flask import Blueprint, jsonify
+from functools import wraps
+from flask import Blueprint, jsonify, request
 
 
 def register_routes(flask_app):
@@ -32,6 +33,13 @@ class Response(object):
         return response, 400
 
     @staticmethod
+    def unauthorized(message=None):
+        response = jsonify({
+            'message': message or 'Unauthorized',
+        })
+        return response, 401
+
+    @staticmethod
     def forbidden(message=None):
         response = jsonify({
             'message': message or 'Forbidden',
@@ -44,6 +52,22 @@ class Response(object):
             'message': message or 'Conflict',
         })
         return response, 409
+
+
+def auth_required(fn):
+    @wraps(fn)
+    def inner_auth_required(*args, **kwargs):
+        from ..models import UserLoginHistory
+
+        session = request.headers.get('Authorizer')
+        user = UserLoginHistory.get_login_user(session)  # noqa
+        if not user:
+            return Response.unauthorized()
+
+        request.user = user
+        return fn(*args, **kwargs)
+
+    return inner_auth_required
 
 
 API = Blueprint('api', __name__)

@@ -1,13 +1,13 @@
 #! /usr/bin/env python
 import os
 import logging
-from flask import Flask
+from flask import Flask, request
 from flasgger import Swagger
 
 
 def before_request():
     ''' any pre-process pre each request '''
-    pass
+    request.user = None
 
 
 def create_flask_app(config=None):

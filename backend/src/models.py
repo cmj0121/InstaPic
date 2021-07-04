@@ -25,6 +25,12 @@ class User(TimestampMixin, DB.Model):
     password_salt = DB.Column(DB.String(DATA_LEN), nullable=False)
     password_hash = DB.Column(DB.String(DATA_LEN), nullable=False)
 
+    @property
+    def __json__(self):
+        return {
+            'username': self.username,
+        }
+
     @classmethod
     def get(cls, username):
         sql = DB.session.query(cls).filter(
@@ -71,5 +77,14 @@ class UserLoginHistory(TimestampMixin, DB.Model):
     user_id = DB.Column(DB.String(NAME_LEN), DB.ForeignKey('user.username'), nullable=False)
 
     user = relationship('User', uselist=False)
+
+    @staticmethod
+    def get_login_user(session):
+        sql = DB.session.query(User).join(
+            UserLoginHistory,
+        ).filter(
+            UserLoginHistory.session == session,
+        )
+        return sql.first()
 
 # vim: set ts=4 sw=4 expandtab:

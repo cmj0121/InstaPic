@@ -3,12 +3,51 @@ import time
 import random
 from flask import request, current_app
 
-from . import API, Response
+from . import API, Response, auth_required
 from ..models import User
+
+
+@API.route('/api/me')
+@auth_required
+def me():
+    return Response.ok(request.user)
 
 
 @API.route('/api/user', methods=['POST'])
 def signup():
+    '''
+        User sign-up
+        ---
+        tags:
+          - user
+        parameters:
+          - in: body
+            name: body
+            schema:
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: Carol
+                password:
+                  type: string
+                  example: password
+        responses:
+          201:
+            description: success sign-up
+            schema:
+              type: object
+              properties:
+                session:
+                  type: string
+                  description: the login sesssion, should be stored carefully
+          400:
+            description: missing any necessary field
+          409:
+            description: user already sign-up
+    '''
     if request.json:
         username = request.json.get('username')
         password = request.json.get('password')
@@ -22,6 +61,7 @@ def signup():
 
                 user = User.create_user(username, password)
                 return Response.created({
+                    'username': username,
                     'session': user.session,
                 })
             except Exception as e:
@@ -45,6 +85,7 @@ def signin():
                 return Response.forbidden()
 
             return Response.created({
+                'username': username,
                 'session': user.session,
             })
 

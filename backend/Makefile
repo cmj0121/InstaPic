@@ -21,4 +21,4 @@ route:	# show all routes
 	FLASK_APP=main:app flask routes
 
 test:	# run test
-	python -m pytest
+	python3 -m pytest
