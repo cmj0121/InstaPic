@@ -53,6 +53,29 @@ class Response(object):
         })
         return response, 409
 
+    @staticmethod
+    def pagination(obj, sql, page_size=4, primary_key='id'):
+        page_size = request.args.get('page_size', page_size)
+        if isinstance(page_size, str) and not page_size.isdigit():
+            return Response.bad_request(f'page_size should be int: {page_size}')
+
+        page_size = int(page_size)
+        if not 0 < page_size < 100:
+            return Response.bad_request(f'page_size should be within 0 ~ 100: {page_size}')
+
+        next_id = request.args.get('next_id')
+        if next_id:
+            sql = sql.filter(
+                getattr(obj, primary_key) < next_id,
+            )
+
+        rows = sql.limit(page_size+1).all()
+        if len(rows) > page_size:
+            rows = rows[:-1]
+            return Response.ok(rows, {'NEXT_ID': getattr(rows[-1], primary_key)})
+
+        return Response.ok(rows)
+
 
 def auth_required(fn):
     @wraps(fn)

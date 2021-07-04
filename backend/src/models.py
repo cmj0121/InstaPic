@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+import ulid
 import hashlib
 import secrets
 from datetime import datetime
@@ -86,5 +87,25 @@ class UserLoginHistory(TimestampMixin, DB.Model):
             UserLoginHistory.session == session,
         )
         return sql.first()
+
+
+class Post(TimestampMixin, DB.Model):
+    __tablename__ = 'post'
+
+    id = DB.Column(DB.String(NAME_LEN), primary_key=True)
+    desc = DB.Column(DB.String(TEXT_LEN, convert_unicode=True))
+    user_id = DB.Column(DB.String(NAME_LEN), DB.ForeignKey('user.username'), nullable=False, index=True)
+
+    def __init__(self, **kwargs):
+        self.id = ulid.ulid()
+        super().__init__(**kwargs)
+
+    @property
+    def __json__(self):
+        return {
+            'link': 'https://dummyimage.com/250/ffffff/000000',
+            'desc': self.desc or '',
+            'username': self.user_id,
+        }
 
 # vim: set ts=4 sw=4 expandtab:

@@ -1,10 +1,6 @@
 FROM python:3.9.6-alpine3.14
 
-RUN apk add --no-cache \
-	git \
-	bash \
-	curl \
-	make
+RUN apk add --no-cache git bash curl rsync make gcc g++ musl-dev
 
 # ref: https://github.com/flutter/flutter/issues/73260
 RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
@@ -16,6 +12,11 @@ ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PAT
 
 WORKDIR /src
 ADD . .
+
+RUN pip install -r backend/requirements.txt
+RUN make heroku
+
+WORKDIR release
 USER nobody
 
-CMD make run
+CMD gunicorn main:app -b '0.0.0.0:8000'

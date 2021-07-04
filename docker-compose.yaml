@@ -3,10 +3,10 @@ version: '3.9'
 services:
   portal:
     build:
-      context: frontend/
+      context: .
       dockerfile: Dockerfile
     volumes:
-      - ./frontend/:/src
+      - .:/src
     ports:
       - 8000:8000
     healthcheck:
@@ -15,24 +15,6 @@ services:
         - curl
         - -f
         - http://localhost:8000
-      interval: 3m30s
-      timeout: 15s
-      retries: 10
-      start_period: 30s
-  api:
-    build:
-      context: backend/
-      dockerfile: Dockerfile
-    volumes:
-      - ./backend/:/src
-    ports:
-      - 8001:8000
-    healthcheck:
-      test:
-        - CMD
-        - curl
-        - -f
-        - http://localhost:8001
       interval: 3m30s
       timeout: 15s
       retries: 10

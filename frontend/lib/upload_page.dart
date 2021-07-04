@@ -1,8 +1,12 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 
+import 'photo_page.dart';
 import 'login_page.dart';
 import 'user.dart';
 
@@ -30,6 +34,14 @@ class UploadPage extends StatefulWidget {
 class _UploadPageState extends State<UploadPage> {
   Image? _image;
   User user = User.fromCookie();
+
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +77,7 @@ class _UploadPageState extends State<UploadPage> {
               TextField(
                 // limit the input lenth to 32 chars
                 maxLength: 32,
+                controller: _controller,
                 decoration: InputDecoration(
                   labelText: 'description',
                   hintText: 'memo',
@@ -128,7 +141,7 @@ class _UploadPageState extends State<UploadPage> {
     );
   }
 
-  void uploadImage(BuildContext context) {
+  void uploadImage(BuildContext context) async {
     if (_image == null) {
       showDialog<String>(
         context: context,
@@ -146,7 +159,25 @@ class _UploadPageState extends State<UploadPage> {
     }
 
     // upload image and back to privious page
-    Navigator.of(context).pop();
+    final resp = await http.post(
+      Uri.base.replace(path: '/api/post'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorizer': user.session(),
+      },
+      body: jsonEncode(<String, String> {
+        'desc': _controller.text,
+      }),
+    );
+
+    switch (resp.statusCode) {
+      case 201:
+        Navigator.of(context).pushReplacementNamed(InstaPicPage.route);
+        break;
+      default:
+        print('cannot upload: ${resp.statusCode}');
+        break;
+    }
   }
 
   void filePicker() async {

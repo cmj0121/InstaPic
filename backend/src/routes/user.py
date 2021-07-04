@@ -10,6 +10,28 @@ from ..models import User
 @API.route('/api/me')
 @auth_required
 def me():
+    '''
+        get user info
+        ---
+        tags:
+          - user
+        parameters:
+          - in: header
+            name: Authorizer
+            required: true
+            description: the login session
+        responses:
+          200:
+            description: success sign-up
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: the username
+          401:
+            description: missing header or invalid header
+    '''
     return Response.ok(request.user)
 
 
@@ -73,6 +95,39 @@ def signup():
 
 @API.route('/api/user/signin', methods=['POST'])
 def signin():
+    '''
+        User sign-in
+        ---
+        tags:
+          - user
+        parameters:
+          - in: body
+            name: body
+            schema:
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: Carol
+                password:
+                  type: string
+                  example: password
+        responses:
+          201:
+            description: success sign-up
+            schema:
+              type: object
+              properties:
+                session:
+                  type: string
+                  description: the login sesssion, should be stored carefully
+          400:
+            description: missing any necessary field
+          403:
+            description: invalid username / password
+    '''
     if request.json:
         username = request.json.get('username')
         password = request.json.get('password')

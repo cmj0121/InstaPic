@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -10,28 +12,56 @@ import 'user.dart';
 
 // the image widget to show the upload image
 class CustomizedImage extends StatelessWidget {
-  final String link;
+  final String? link;
+  final String? desc;
+  final String? username;
 
-  CustomizedImage(@required this.link);
+  CustomizedImage({
+    @required this.link,
+    @required this.desc,
+    @required this.username,
+  });
+
+  factory CustomizedImage.fromJson(Map<String, String> json) {
+    return CustomizedImage(
+      link: json['link']!,
+      desc: json['desc']!,
+      username: json['username']!,
+    );
+  }
 
   @override
-  Widget build(BuildContext build) {
+  Widget build(BuildContext context) {
     return Card(
       // using cached_network_image to cache the image on local
-      child: CachedNetworkImage(
-        imageUrl: link,
-        progressIndicatorBuilder: (context, url, downloadProgress) =>
-          CircularProgressIndicator(value: downloadProgress.progress),
-        errorWidget: (context, url, error) => Icon(Icons.error),
-        imageBuilder: (context, provider) => Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: provider,
-              fit: BoxFit.cover,
+      child: Column(
+        children: <Widget>[
+          CachedNetworkImage(
+            imageUrl: link!,
+            progressIndicatorBuilder: (context, url, downloadProgress) =>
+              CircularProgressIndicator(value: downloadProgress.progress),
+            errorWidget: (context, url, error) => Icon(Icons.error),
+            imageBuilder: (context, provider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: provider,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
-        ),
-      )
+          Text(
+            desc!,
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+          TextButton(
+            child: Text(
+              username ?? '',
+            ),
+            onPressed: () => {},
+          ),
+        ],
+      ),
     );
   }
 }
@@ -72,6 +102,9 @@ class _InstaPicState extends State<InstaPicPage> {
         fetchImage();
       }
     });
+
+    // load first images
+    fetchImage();
   }
 
   @override
@@ -79,9 +112,6 @@ class _InstaPicState extends State<InstaPicPage> {
     if (user.username == null) {
       return UserLoginPage(title: widget.title);
     }
-
-    // load first images
-    fetchImage();
 
     return Scaffold(
       appBar: AppBar(
@@ -150,18 +180,35 @@ class _InstaPicState extends State<InstaPicPage> {
       );
   }
 
-  Future<List<CustomizedImage>> fetchImage() async {
+  void fetchImage() async {
     Random random = new Random();
 
-    final String link = 'https://dummyimage.com/250/ffffff/000000';
-    List<CustomizedImage> imgs = List<CustomizedImage>.generate(random.nextInt(100), (_) => CustomizedImage(link)); 
+    final resp = await http.get(
+      Uri.base.replace(path: '/api/posts'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorizer': user.session(),
+      },
+    );
 
-    setState(() {
-      _images.addAll(imgs);
-      _loading = false;
-    });
+    switch (resp.statusCode) {
+      case 200:
+        List data = json.decode(utf8.decode(resp.bodyBytes));
+        List<CustomizedImage> images = data.map( (item) => CustomizedImage.fromJson(item) ).toList();
 
-    return  _images;
+        setState(() {
+          _images.addAll(images);
+          _loading = images.length > 0 ? false : true;
+        });
+        break;
+      case 401:
+        print('not login yet');
+        Navigator.of(context).pushReplacementNamed(UserLoginPage.route);
+        break;
+      default:
+        print('Unknown error: ${resp.statusCode}');
+        break;
+    }
   }
 }
 

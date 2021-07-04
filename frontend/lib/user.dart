@@ -61,6 +61,10 @@ class User extends StatelessWidget {
     html.window.localStorage.remove(User.session_key);
     html.window.localStorage.remove(User.username_key);
   }
+
+  String session() {
+    return html.window.localStorage[User.session_key] ?? '';
+  }
 }
 
 // vim: set ts=2 sw=2 expandtab:
