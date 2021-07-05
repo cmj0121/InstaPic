@@ -1,6 +1,10 @@
 #! /usr/bin/env python
+from collections import OrderedDict
+import unicodedata
 from functools import wraps
 from flask import Blueprint, jsonify, request, make_response
+from werkzeug.http import dump_options_header
+from werkzeug.urls import url_quote
 
 
 def register_routes(flask_app):
@@ -31,8 +35,18 @@ class Response(object):
         if headers and isinstance(headers, dict):
             for key, value in headers.items():
                 response.headers[key] = value
+
         response.headers.set('Content-Type', 'image/png')
-        response.headers.set('Content-Disposition', 'attachment', filename=filename)
+        # filename utf-8 encoding
+        filenames = OrderedDict()
+        try:
+            filename = filename.encode('latin-1')
+        except UnicodeEncodeError:
+            filenames['filename'] = unicodedata.normalize('NFKD', filename).encode('latin-1', 'ignore')
+            filenames['filename*'] = f"UTF-8''{url_quote(filename)}"
+        else:
+            filenames['filename'] = filename
+        response.headers.set('Content-Disposition', dump_options_header('attachment', filenames))
         return response
 
     @staticmethod
