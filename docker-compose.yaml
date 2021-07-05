@@ -1,6 +1,14 @@
 version: '3.9'
 
 services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: database
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
   portal:
     build:
       context: .
@@ -9,6 +17,8 @@ services:
       - .:/src
     ports:
       - 8000:8000
+    environment:
+      DATABASE_URL: postgres://username:password@db:5432/database
     healthcheck:
       test:
         - CMD

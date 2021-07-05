@@ -64,6 +64,10 @@ class Config(object):
     STATIC_FOLDER = f'{os.getcwd()}/static'
 
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///:memory:')
+    if SQLALCHEMY_DATABASE_URI.startswith('postgres://'):
+        # HACK
+        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('postgres://', 'postgresql://')
+
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 # vim: set ts=4 sw=4 expandtab:

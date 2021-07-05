@@ -120,7 +120,7 @@ class Photo(TimestampMixin, DB.Model):
 
     id = DB.Column(DB.String(NAME_LEN), primary_key=True)
     filename = DB.Column(DB.String(NAME_LEN), nullable=False)
-    blob = DB.Column(DB.BLOB)
+    blob = DB.Column(DB.LargeBinary)
 
     @classmethod
     def get(cls, photo_id):
