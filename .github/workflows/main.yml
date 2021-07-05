@@ -8,8 +8,27 @@ jobs:
   compliance:
     name: compliance
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9]
 
     steps:
       - uses: actions/checkout@master
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: linter and test for python
+        run: |
+          python install -r backend/requirements.txt
+          python install flake8
+          flake8 backend/
+          python -m pytest
+
+      - uses: subosito/flutter-action@v1
+      - name: linter and test for flutter
+        run: |
+          flutter pub get
+          flutter test
 
 # vim: set ts=2 sw=2 expandtab:
