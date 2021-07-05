@@ -104,6 +104,7 @@ class Post(TimestampMixin, DB.Model):
     @property
     def __json__(self):
         return {
+            'id': self.id,
             'link': f'/api/photo/{self.photo_id}',
             'desc': self.desc or '',
             'username': self.user_id,

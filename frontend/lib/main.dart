@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'configure_nonweb.dart' if (dart.library.html) 'configure_web.dart';
 
-import 'login_page.dart';
-import 'photo_page.dart';
-import 'upload_page.dart';
-
+import 'route.dart';
 
 // main function, start your application
 void main() {
@@ -26,11 +23,12 @@ class InstaPicApp extends StatelessWidget {
       // the default theme of all application
       theme: ThemeData.dark(),
       // default route page
-      initialRoute: InstaPicPage.route,
+      initialRoute: IndexPage.route,
       routes: <String, WidgetBuilder> {
-        InstaPicPage.route: (BuildContext context) => InstaPicPage(title: title),
-        UploadPage.route: (BuildContext context) => UploadPage(title: title),
-      },
+        IndexPage.route:  (BuildContext context) => IndexPage(),
+        LoginPage.route:  (BuildContext context) => LoginPage(),
+        UploadPage.route: (BuildContext context) => UploadPage(),
+      }
     );
   }
 }

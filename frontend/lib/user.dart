@@ -1,35 +1,37 @@
-import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:universal_html/html.dart' as html;
 
-import 'config.dart';
+import 'route.dart';
+import 'requests.dart';
 
+const String sessionKey = 'session';
+
+void save_session(String? session) {
+  if (session == null) {
+    html.window.localStorage.remove(sessionKey);
+    return;
+  }
+  html.window.localStorage[sessionKey] = session;
+}
+
+String get_session() {
+  return html.window.localStorage[sessionKey] ?? '';
+}
+
+void logout() {
+  html.window.localStorage.remove(sessionKey);
+}
 
 class User extends StatelessWidget {
-  static const String session_key = 'session';
-  static const String username_key = 'username';
-
-  final String? username;
+  String username;
 
   User(this.username);
 
-  factory User.fromCookie() {
-    String? username = html.window.localStorage[User.username_key];
-
-    if (username != null && username == '') {
-      // set username as null if empty
-      username = null;
-    }
-
-    return User(username);
-  }
-
   @override
   Widget build(BuildContext context) {
+
     return TextButton(
-      child: Text(username ?? '<Not Login>'),
+      child: Text(username),
       onPressed: () => showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
@@ -38,9 +40,9 @@ class User extends StatelessWidget {
             TextButton(
               child: const Text('Yes'),
               onPressed: () {
-                User.logout();
+                logout();
                 // back to index
-                Navigator.of(context).pushReplacementNamed('/');
+                Navigator.of(context).pushReplacementNamed(IndexPage.route);
               }
             ),
             TextButton(
@@ -51,22 +53,6 @@ class User extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  static void save(Map<String, String> json) {
-    // save tookie
-    html.window.localStorage[User.session_key] = json['session']!;
-    html.window.localStorage[User.username_key] = json['username']!;
-  }
-
-  static void logout() {
-    // remove the session from local storage
-    html.window.localStorage.remove(User.session_key);
-    html.window.localStorage.remove(User.username_key);
-  }
-
-  String session() {
-    return html.window.localStorage[User.session_key] ?? '';
   }
 }
 

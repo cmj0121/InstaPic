@@ -79,7 +79,7 @@ class Response(object):
                 getattr(obj, primary_key) < next_id,
             )
 
-        rows = sql.limit(page_size+1).all()
+        rows = sql.order_by(getattr(obj, primary_key).desc()).limit(page_size+1).all()
         if len(rows) > page_size:
             rows = rows[:-1]
             return Response.ok(rows, {'NEXT_ID': getattr(rows[-1], primary_key)})
