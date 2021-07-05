@@ -6,8 +6,9 @@ import 'package:file_picker/file_picker.dart';
 import 'user.dart';
 
 
-//final Uri apiServer = Uri.base;
-final Uri apiServer = Uri.parse('http://localhost:5000');
+final Uri apiServer = Uri.base;
+//final Uri apiServer = Uri.parse('http://localhost:5000');
+
 
 // send the HTTP post with JSON format
 var http_post = (String path, Map<String, dynamic> data) async => post(

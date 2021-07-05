@@ -63,7 +63,7 @@ class Config(object):
 
     STATIC_FOLDER = f'{os.getcwd()}/static'
 
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///:memory:')
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 # vim: set ts=4 sw=4 expandtab:

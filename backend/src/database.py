@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 from contextlib import contextmanager
 from flask_sqlalchemy import SQLAlchemy, current_app
+import psycopg2  # noqa
 
 
 DB = SQLAlchemy()
