@@ -82,7 +82,7 @@ def submit_post():
 
     upload_file = request.files.get('file')
     if not upload_file:
-        raise Response.bad_request('missing file')
+        return Response.bad_request('missing file')
 
     with atomic() as session:
         photo = Photo(
