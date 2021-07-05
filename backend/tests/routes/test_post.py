@@ -1,4 +1,6 @@
 #! /usr/bin/env python
+import io
+from werkzeug.datastructures import FileStorage
 
 
 def test_post(test_client, auth_header):
@@ -34,18 +36,25 @@ def test_post(test_client, auth_header):
 
     # test submit photo
     for n in range(1, 20):
+        mock_file = FileStorage(
+            filename='mock_file.png',
+            stream=io.BytesIO(b'a' * 1024),
+            content_type='image/png',
+        )
         resp = test_client.post(
             'api/post',
-            json={
+            data={
                 'desc': f'memo - {n}',
+                'file': mock_file,
             },
+            content_type='multipart/form-data',
             headers=auth_header,
         )
         assert resp.status_code == 201
         assert resp.json['desc'] == f'memo - {n}'
 
         resp = test_client.get(
-            'api/posts',
+            'api/posts?page_size=50',
             headers=auth_header,
         )
         assert resp.status_code == 200
