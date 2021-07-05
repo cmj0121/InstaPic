@@ -1,4 +1,6 @@
 # InstaPic #
+![CI](https://github.com/cmj0121/InstaPic/workflows/pipeline/badge.svg)
+
 The mock image sharing website for take-home challenge.
 
 ## Requirement ##

@@ -23,7 +23,7 @@ jobs:
           pip install -r backend/requirements.txt
           pip install flake8
           flake8 backend/
-          python -m pytest
+          cd backend && python -m pytest
 
       - uses: subosito/flutter-action@v1
       - name: linter and test for flutter
