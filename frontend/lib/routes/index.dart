@@ -13,8 +13,12 @@ class IndexPage extends StatefulWidget {
   static const String route = '/';
 
   final String title;
+  final String? user_filter;
 
-  IndexPage(this.title);
+  IndexPage({
+    this.title = 'Insta Pic',
+    this.user_filter,
+  });
 
   @override
   _IndexState createState() => _IndexState();
@@ -22,7 +26,6 @@ class IndexPage extends StatefulWidget {
 
 class _IndexState extends State<IndexPage> {
   bool _loading = false;
-  String? _username;
   List<CustomizedImage> _images = [];
   ScrollController _controller = ScrollController(initialScrollOffset: 0.0, keepScrollOffset: true);
 
@@ -110,18 +113,6 @@ class _IndexState extends State<IndexPage> {
     if (constraints.maxWidth > 1000) {
       return GridView.count(
         controller: _controller,
-        crossAxisCount: 5,
-        children: List.generate(_images.length, (index) => _images[index]),
-      );
-    } else if (constraints.maxWidth > 800) {
-      return GridView.count(
-        controller: _controller,
-        crossAxisCount: 4,
-        children: List.generate(_images.length, (index) => _images[index]),
-      );
-    } else if (constraints.maxWidth > 600) {
-      return GridView.count(
-        controller: _controller,
         crossAxisCount: 3,
         children: List.generate(_images.length, (index) => _images[index]),
       );
@@ -135,15 +126,14 @@ class _IndexState extends State<IndexPage> {
   }
 
   void fetchImage() async {
-    final resp = await api_get_image(_username, '');
+    var last_id = _images.length > 0 ? _images.last.id : '';
+    final resp = await api_get_image(widget.user_filter ?? '', last_id);
 
     switch (resp.statusCode) {
       case 200:
         List data = json.decode(utf8.decode(resp.bodyBytes));
-        print('${data}');
         List<CustomizedImage> images = data.map( (item) => CustomizedImage.fromJson(item) ).toList();
 
-        print('fetch ${images.length} posts');
         setState(() {
           _images.addAll(images);
           _loading = images.length > 0 ? false : true;

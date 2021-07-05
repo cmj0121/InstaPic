@@ -15,7 +15,8 @@ class UploadPage extends StatefulWidget {
   final double height;
   final int maxDescription;
 
-  UploadPage(this.title, {
+  UploadPage({
+    this.title = 'Insta Pic',
     this.width = 600,
     this.height = 400,
     // limit the input lenth to 32 chars

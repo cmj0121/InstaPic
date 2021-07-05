@@ -6,11 +6,13 @@ import 'route.dart';
 
 // the image widget to show the upload image
 class CustomizedImage extends StatelessWidget {
+  final String id;
   final String link;
   final String desc;
   final String username;
 
   CustomizedImage({
+    required this.id,
     required this.link,
     required this.desc,
     required this.username,
@@ -18,6 +20,7 @@ class CustomizedImage extends StatelessWidget {
 
   factory CustomizedImage.fromJson(Map<String, dynamic> json) {
     return CustomizedImage(
+      id: json['id'],
       link: json['link'],
       desc: json['desc'],
       username: json['username'],
@@ -54,7 +57,9 @@ class CustomizedImage extends StatelessWidget {
               username,
               style: Theme.of(context).textTheme.subtitle1,
             ),
-            onPressed: () => Navigator.of(context).pushNamed(IndexPage.route, arguments: username),
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) => IndexPage(user_filter: username)
+            )),
           ),
         ],
       ),

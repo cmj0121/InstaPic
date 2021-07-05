@@ -25,9 +25,9 @@ class InstaPicApp extends StatelessWidget {
       // default route page
       initialRoute: IndexPage.route,
       routes: <String, WidgetBuilder> {
-        IndexPage.route:  (BuildContext context) => IndexPage(title),
-        LoginPage.route:  (BuildContext context) => LoginPage(title),
-        UploadPage.route: (BuildContext context) => UploadPage(title),
+        IndexPage.route:  (BuildContext context) => IndexPage(),
+        LoginPage.route:  (BuildContext context) => LoginPage(),
+        UploadPage.route: (BuildContext context) => UploadPage(),
       }
     );
   }

@@ -13,7 +13,8 @@ class LoginPage extends StatefulWidget {
   final double width;
   final double height;
 
-  LoginPage(this.title, {
+  LoginPage({
+    this.title = 'Insta Pic',
     this.width = 400,
     this.height = 600,
   });

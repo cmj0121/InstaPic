@@ -47,7 +47,7 @@ def list_all_posts():
     sql = Post.query
     if username:
         sql = sql.filter(
-            Post.username == username
+            Post.user_id == username
         )
     return Response.pagination(Post, sql)
 
