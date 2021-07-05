@@ -5,8 +5,8 @@ on:
   - pull_request
 
 jobs:
-  compliance-python:
-    name: compliance-python
+  compliance:
+    name: compliance
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -24,16 +24,5 @@ jobs:
           flake8 backend/
           cd backend && python -m pytest
 
-  compliance-flutter:
-    name: compliance-flutter
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@master
-      - uses: subosito/flutter-action@v1
-      - name: linter and test for flutter
-        run: |
-          cd frontend && flutter pub get
-          cd frontend && flutter test
 
 # vim: set ts=2 sw=2 expandtab:
