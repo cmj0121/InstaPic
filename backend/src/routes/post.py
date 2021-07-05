@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+import base64
 import ulid
 from flask import request, abort
 
@@ -87,7 +88,7 @@ def submit_post():
     with atomic() as session:
         photo = Photo(
             id=ulid.ulid(),
-            blob=upload_file.read(),
+            blob=base64.b64encode(upload_file.read()),
             filename=upload_file.filename,
         )
         session.add(photo)
@@ -107,6 +108,6 @@ def get_submitted_photo(photo_id):
     if not photo:
         abort(404)
 
-    return Response.blob(photo.blob, filename=f'{photo.filename}.png')
+    return Response.blob(base64.b64decode(photo.blob), filename=f'{photo.filename}.png')
 
 # vim: set ts=4 sw=4 expandtab:

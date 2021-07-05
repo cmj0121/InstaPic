@@ -124,7 +124,7 @@ class _UploadState extends State<UploadPage> {
             padding: const EdgeInsets.only(top: 6),
             child: TextButton(
               child: Text(
-                'Uplaod',
+                'Upload',
                 style: Theme.of(context).textTheme.headline4?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
